@@ -45,3 +45,12 @@ group by ticker
 select ticker, count(*) from trading.prices
 where price < open and EXTRACT(YEAR FROM market_date) = 2020
 group by ticker;
+
+--Question 11. What percentage of days in 2020 were breakout days vs non-breakout days? Round the percentages to 2 decimal places
+SELECT
+  ticker,
+  ROUND(SUM(CASE WHEN price > open THEN 1 ELSE 0 END) / COUNT(*)::NUMERIC, 2)  AS breakout_days ,
+  ROUND(SUM(CASE WHEN price < open THEN 1 ELSE 0 END) /  COUNT(*)::NUMERIC, 2)  AS non_breakout_days
+FROM trading.prices
+WHERE EXTRACT(YEAR FROM market_date) = 2020
+GROUP BY ticker;
