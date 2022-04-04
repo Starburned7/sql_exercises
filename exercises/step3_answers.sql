@@ -19,3 +19,29 @@ market_date between '2020-01-01' and '2020-12-31'
 
 --Question 6. What is the monthly average of the price column for Ethereum in 2020?
 -- Sort the output in chronological order and also round the average price value to 2 decimal places
+select DATE_TRUNC('MON', market_date) as month, ROUND(AVG(price)::NUMERIC, 2) from trading.prices
+where ticker='ETH' 
+--and market_date between '2020-01-01' and '2020-12-31' 
+and EXTRACT(YEAR FROM market_date) = 2020
+group by month
+order by month;
+
+--Question 7. Are there any duplicate market_date values for any ticker value in our table?
+select ticker, count(market_date) as total_count,
+count(distinct market_date) as unique_count from trading.prices
+group by ticker
+
+--Question 8. How many days from the trading.prices table exist where the high price of Bitcoin is over $30,000?
+select count(*) from trading.prices
+where ticker = 'BTC'
+and high > 30000  
+
+--Question 9. How many "breakout" days were there in 2020 where the price column is greater than the open column for each ticker?
+select ticker, count(*) from trading.prices
+where price > open and EXTRACT(YEAR FROM market_date) = 2020
+group by ticker
+
+--Question 10. How many "non_breakout" days were there in 2020 where the price column is less than the open column for each ticker?
+select ticker, count(*) from trading.prices
+where price < open and EXTRACT(YEAR FROM market_date) = 2020
+group by ticker;
