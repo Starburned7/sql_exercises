@@ -15,3 +15,13 @@ where t.ticker = 'BTC'
 group by m.first_name
 order by btc_quantity desc limit 3
 
+--Question 4. What is total value of all Ethereum portfolios for each region at the end date of our analysis? Order the output by descending portfolio value
+select m.region, sum(
+case 
+when t.txn_type = 'BUY' then t.quantity
+when t.txn_type = 'SELL' then -t.quantity end) as ethereum_value from trading.members m 
+join trading.transactions t on m.member_id = t.member_id
+join trading.prices p on p.ticker = t.ticker
+where t.ticker = 'ETH'  and p.market_date = '2021-08-29'
+group by m.region
+order by sum(t.quantity) desc 
