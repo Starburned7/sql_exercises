@@ -54,3 +54,39 @@ from trading.transactions
 where ticker = 'BTC'
 group by member_id
 order by final_btc_amount desc
+
+-- Question 8. Which members have sold less than 500 Bitcoin? Sort the output from the most BTC sold to least
+select member_id, sum(quantity) from trading.transactions
+where ticker = 'BTC' and txn_type = 'SELL' 
+group by member_id
+having sum(quantity) < 500
+order by sum(quantity) desc
+
+/*Question 9.
+What is the total Bitcoin quantity for each member_id owns after adding all of the BUY and SELL transactions from the transactions table?
+Sort the output by descending total quantity*/
+select member_id, 
+sum(case 
+when txn_type ='BUY' then quantity 
+when txn_type ='SELL' then -quantity
+else 0 end) as total_quantity
+from trading.transactions
+where ticker = 'BTC'
+group by member_id
+order by total_quantity desc
+
+--Question 10. Which member_id has the highest buy to sell ratio by quantity?
+select member_id, 
+sum(case 
+when txn_type ='BUY' then quantity end) /  sum(case when txn_type ='SELL' then quantity end) as buy_sell_ratio
+from trading.transactions
+group by member_id
+order by buy_sell_ratio desc
+
+--Question 11.For each member_id - which month had the highest total Ethereum quantity sold?
+select member_id, date_trunc('month', txn_date) as month,
+sum(quantity)
+from trading.transactions
+where ticker = 'ETH' and txn_type='SELL' 
+group by member_id, month 
+order by sum(quantity) desc
