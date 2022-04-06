@@ -25,3 +25,13 @@ join trading.prices p on p.ticker = t.ticker
 where t.ticker = 'ETH'  and p.market_date = '2021-08-29'
 group by m.region
 order by sum(t.quantity) desc 
+
+--Question 5. What is the average value of each Ethereum portfolio in each region? Sort this output in descending order
+select m.region, avg(
+ case 
+when t.txn_type = 'BUY' then t.quantity
+when t.txn_type = 'SELL' then -t.quantity end) as ethereum_avg_value from trading.members m 
+join trading.transactions t on m.member_id = t.member_id
+where t.ticker = 'ETH'
+group by m.region
+order by ethereum_avg_value desc 
