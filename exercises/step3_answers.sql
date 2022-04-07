@@ -54,3 +54,14 @@ SELECT
 FROM trading.prices
 WHERE EXTRACT(YEAR FROM market_date) = 2020
 GROUP BY ticker;
+
+--Question 11. Convert the volume column in the trading.prices table with an adjusted integer value to take into the unit values
+--Return only the market_date, price, volume and adjusted_volume columns for the first 10 days of August 2021 for Ethereum only
+select market_date, price, volume, 
+case
+when RIGHT(volume, 1) = 'K' then LEFT(volume, LENGTH(volume) - 1)::numeric * 1000
+when RIGHT(volume, 1) = 'M' then LEFT(volume, LENGTH(volume) - 1)::numeric * 1000000
+WHEN volume = '-' THEN 0 end as adjusted_volume
+from trading.prices
+where ticker = 'ETH' and market_date between '2021-08-01' and '2021-08-10'
+order by market_date
