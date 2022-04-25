@@ -51,3 +51,17 @@ select year_end, ticker, yearly_quantity, cumulative_sum from temp_portfolio_bas
 where first_name = 'Abe'
 order by ticker, year_end;
 
+DROP TABLE IF EXISTS temp_cumulative_portfolio_base;
+CREATE TEMP TABLE temp_cumulative_portfolio_base AS
+SELECT
+  first_name,
+  region,
+  year_end,
+  ticker,
+  yearly_quantity,
+  SUM(yearly_quantity) OVER (
+    PARTITION BY first_name, ticker
+    ORDER BY year_end
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) AS cumulative_quantity
+FROM temp_portfolio_base;
